@@ -123,7 +123,7 @@ class Brain:
     @staticmethod
     def _tokenize(string):
         return [ re.sub("\s+", " ", word).lower() for word in
-                 re.findall(r'\w+|\W+', string, re.UNICODE) ]
+                 re.findall(r'\w+|\W+', string.strip(), re.UNICODE) ]
 
 testm = MModel()
 br = Brain(testm)
