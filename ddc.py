@@ -38,12 +38,12 @@ class MModel:
         if len(words) < self.order+1:
             raise SequenceTooShortException(words)
 
-        triplet = (None,) + tuple(words[:ord])
+        window = (None,) + tuple(words[:ord])
         for word in words[ord:]:
-            self._learn_triplet(triplet)
-            triplet = triplet[1:ord+1] + (word,)
-        self._learn_triplet(triplet)
-        self._learn_triplet(triplet[1:ord+1] + (None,))
+            self._learn_triplet(window)
+            window = window[1:ord+1] + (word,)
+        self._learn_triplet(window)
+        self._learn_triplet(window[1:ord+1] + (None,))
 
     def _learn_triplet(self, words):
         for direction in ('f', 'b'):
@@ -89,15 +89,15 @@ class MModel:
             assert(isinstance(middle_variants[middle], unicode))
             rightmost = middle_variants[middle]
 
-        triplet = (None,) + middle + (rightmost,)
+        window = (None,) + middle + (rightmost,)
         result = list(middle) + [rightmost,]
 
-        assert(len(triplet) == self.order + 1)
+        assert(len(window) == self.order + 1)
 
         while 1:
-            triplet = triplet[1:]
-            middle_variants = self.db[self._root_key(triplet[0], 'f')]
-            rightmost_variants = middle_variants[triplet[1:]]
+            window = window[1:]
+            middle_variants = self.db[self._root_key(window[0], 'f')]
+            rightmost_variants = middle_variants[window[1:]]
 
             if isinstance(rightmost_variants, list):
                 rightmost = random.choice(rightmost_variants)
@@ -107,7 +107,7 @@ class MModel:
                 assert(rightmost_variants is None)
                 break
 
-            triplet = triplet + (rightmost,)
+            window = window + (rightmost,)
 
             result.append(rightmost)
 
@@ -157,3 +157,4 @@ for line in open('learn.txt'):
 
 for i in range(1, 20):
     print br.generate_random()
+    print
