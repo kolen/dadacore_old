@@ -116,6 +116,8 @@ class Brain:
                 string += word
             sentence_start = word[0] in ['.', '?', '!']
 
+        if not sentence_start:
+            string += '.'
         return string
 
     @staticmethod
