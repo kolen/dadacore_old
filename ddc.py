@@ -10,10 +10,22 @@ class SequenceTooShortException(Exception):
 
 class MModel:
     DEFAULT_FILENAME = "markovdb"
+    DEFAULT_ORDER = 4
 
-    def __init__(self, filename=None):
+    def __init__(self, filename=None, order=None):
         if not filename: filename = self.DEFAULT_FILENAME
         self.db = shelve.open(filename, writeback=True)
+        if self.db.has_key('.config'):
+            self.order = self.db['.config']['order']
+        else:
+            if not order: order = self.DEFAULT_ORDER
+            self.order = order
+            self._create_config()
+
+    def _create_config(self):
+        self.db['.config'] = {
+            'order': self.order
+        }
 
     def _root_key(self, word, direction):
         assert(direction == 'f' or direction == 'b')
@@ -21,75 +33,82 @@ class MModel:
         return (">%s" if direction == 'f' else "<%s") % word.encode('utf-8')
 
     def learn(self, words):
-        if len(words) < 3:
+        ord = self.order
+        if len(words) < self.order+1:
             raise SequenceTooShortException(words)
 
-        triplet = (None, words[0], words[1])
-        for word in words[2:]:
+        triplet = (None,) + tuple(words[:ord])
+        for word in words[ord:]:
             self._learn_triplet(triplet)
-            triplet = (triplet[1], triplet[2], word)
+            triplet = triplet[1:ord+1] + (word,)
         self._learn_triplet(triplet)
-        self._learn_triplet((triplet[1], triplet[2], None))
+        self._learn_triplet(triplet[1:ord+1] + (None,))
 
     def _learn_triplet(self, words):
         for direction in ('f', 'b'):
             self._learn_triplet_dir(words, direction)
 
     def _learn_triplet_dir(self, words, direction):
-        assert(len(words) == 3)
+        ord = self.order
+        assert(len(words) == ord+1)
 
         if direction == 'b':
-            words = (words[2], words[1], words[0])
+            words = tuple(reversed(words))
 
         root_key = self._root_key(words[0], direction)
         if not self.db.has_key(root_key):
             self.db[root_key] = {}
         toplevel = self.db[root_key]
 
-        if not toplevel.has_key(words[1]):
-            toplevel[words[1]] = words[2]
+        key = words[1:-1]
+        rightmost = words[-1]
+        if not toplevel.has_key(key):
+            toplevel[key] = rightmost
         else:
-            if isinstance(toplevel[words[1]], unicode):
-                if toplevel[words[1]] != words[2]:
-                    toplevel[words[1]] = [ toplevel[words[1]], words[2] ]
-            elif isinstance(toplevel[words[1]], list):
-                if words[2] not in toplevel[words[1]]:
-                    toplevel[words[1]].append(words[2])
+            if isinstance(toplevel[key], unicode):
+                if toplevel[key] != rightmost:
+                    toplevel[key] = [ toplevel[key], rightmost ]
+            elif isinstance(toplevel[key], list):
+                if rightmost not in toplevel[key]:
+                    toplevel[key].append(rightmost)
             else:
-                assert(toplevel[words[1]] is None)
+                assert(toplevel[key] is None)
 
-                toplevel[words[1]] = words[2]
+                toplevel[key] = rightmost
 
     def generate_random(self):
         root_key_start = self._root_key(None, 'f')
 
-        first_variants = self.db[root_key_start]
-        first = random.choice(first_variants.keys())
-        if isinstance(first_variants[first], list):
-            second = random.choice(first_variants[first])
+        middle_variants = self.db[root_key_start]
+        middle = random.choice(middle_variants.keys())
+        assert(isinstance(middle, tuple))
+        if isinstance(middle_variants[middle], list):
+            rightmost = random.choice(middle_variants[middle])
         else:
-            assert(isinstance(first_variants[first], unicode))
-            second = first_variants[first]
+            assert(isinstance(middle_variants[middle], unicode))
+            rightmost = middle_variants[middle]
 
-        triplet = (None, first, second)
-        result = [first, second]
+        triplet = (None,) + middle + (rightmost,)
+        result = list(middle) + [rightmost,]
+
+        assert(len(triplet) == self.order + 1)
 
         while 1:
-            triplet = (triplet[1], triplet[2])
-            first_variants = self.db[self._root_key(triplet[0], 'f')]
-            second = first_variants[triplet[1]]
+            triplet = triplet[1:]
+            middle_variants = self.db[self._root_key(triplet[0], 'f')]
+            rightmost_variants = middle_variants[triplet[1:]]
 
-            if isinstance(second, list):
-                third = random.choice(second)
-            elif isinstance(second, unicode):
-                third = second
+            if isinstance(rightmost_variants, list):
+                rightmost = random.choice(rightmost_variants)
+            elif isinstance(rightmost_variants, unicode):
+                rightmost = rightmost_variants
             else:
-                assert(second is None)
+                assert(rightmost_variants is None)
                 break
 
-            triplet = triplet + (third,)
+            triplet = triplet + (rightmost,)
 
-            result.append(third)
+            result.append(rightmost)
 
         return result
 
@@ -128,7 +147,10 @@ class Brain:
 testm = MModel()
 br = Brain(testm)
 for line in open('learn.txt'):
-    br.learn(line.decode('utf-8'))
+    try:
+        br.learn(line.decode('utf-8'))
+    except SequenceTooShortException:
+        pass
 
 #pprint(testm.db, indent=4)
 
