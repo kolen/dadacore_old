@@ -93,20 +93,29 @@ class MModel:
 
         return result
 
-def tokenize(string):
-    return re.findall(r'\w+|\W+', string, re.UNICODE)
+class Brain:
+    def __init__(self, model):
+        self.model = model
+
+    def learn(self, string):
+        words = Brain._tokenize(string)
+        self.model.learn(words)
+
+    def generate_random(self):
+        rwords = self.model.generate_random()
+        return ''.join(rwords)
+
+    @staticmethod
+    def _tokenize(string):
+        return [ re.sub("\s+", " ", word).lower() for word in
+                 re.findall(r'\w+|\W+', string, re.UNICODE) ]
 
 testm = MModel()
+br = Brain(testm)
 for line in open('learn.txt'):
-    if line == '.':
-        break
-    words = tokenize(line.decode('utf-8'))
-    if len(words) >= 3:
-        testm.learn(words)
+    br.learn(line.decode('utf-8'))
 
 #pprint(testm.db, indent=4)
 
 for i in range(1, 20):
-    r = testm.generate_random()
-    print "".join(r)
-
+    print br.generate_random()
