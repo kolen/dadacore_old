@@ -11,6 +11,7 @@ render = web.template.render('templates/')
 
 mmodel = ddc.MModel()
 brain = ddc.Brain(mmodel)
+brain.learn(u"Test test test.")
 
 class index:
     def GET(self):
