@@ -1,0 +1,22 @@
+$def with(randomlines)
+<html>
+<head>
+    <title></title>
+    <style>
+        textarea {
+            width: 100%;
+            height: 200px;
+        }
+    </style>
+</head>
+
+<body>
+$for line in randomlines:
+    <p>$line</p>
+
+<form method="post">
+<textarea name="learntext"></textarea>
+<input type="submit" value="learn" />
+</form>
+</body>
+</html>
