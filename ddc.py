@@ -98,12 +98,25 @@ class Brain:
         self.model = model
 
     def learn(self, string):
-        words = Brain._tokenize(string)
+        words = self._tokenize(string)
         self.model.learn(words)
 
     def generate_random(self):
         rwords = self.model.generate_random()
-        return ''.join(rwords)
+        return self._words_to_string_with_caps(rwords)
+
+    @staticmethod
+    def _words_to_string_with_caps(words):
+        string = ''
+        sentence_start = True
+        for word in words:
+            if sentence_start:
+                string += word[0].upper() + word[1:]
+            else:
+                string += word
+            sentence_start = word[0] in ['.', '?', '!']
+
+        return string
 
     @staticmethod
     def _tokenize(string):
