@@ -118,6 +118,7 @@ class Brain:
         self.model = model
 
     def learn(self, string):
+        assert(isinstance(string, unicode))
         words = self._tokenize(string)
         self.model.learn(words)
 
