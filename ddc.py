@@ -27,7 +27,8 @@ class MModel:
             'order': self.order
         }
 
-    def _root_key(self, word, direction):
+    @staticmethod
+    def _root_key(word, direction):
         assert(direction == 'f' or direction == 'b')
         if word is None: word = ''
         return (">%s" if direction == 'f' else "<%s") % word.encode('utf-8')
