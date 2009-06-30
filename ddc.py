@@ -34,6 +34,10 @@ class MModel:
         return (">%s" if direction == 'f' else "<%s") % word.encode('utf-8')
 
     def learn(self, words):
+        """
+        Learn sequence of words, by creating transitions in Markov model.
+        Words is list of strings.
+        """
         ord = self.order
         if len(words) < self.order+1:
             raise SequenceTooShortException(words)
@@ -46,10 +50,19 @@ class MModel:
         self._learn_window(window[1:ord+1] + (None,))
 
     def _learn_window(self, words):
+        """
+        Learn sequence of words. Words must be tuple with count equals to
+        model's order + 1.
+        """
         for direction in ('f', 'b'):
             self._learn_window_dir(words, direction)
 
     def _learn_window_dir(self, words, direction):
+        """
+        Learn sequence of words in one direction.
+        Words must be tuple with count equals to model's order + 1. Direction
+        is string and can be 'f' (forward) or 'b' (back).
+        """
         ord = self.order
         assert(len(words) == ord+1)
 
@@ -80,6 +93,11 @@ class MModel:
         self.db[root_key] = toplevel
 
     def generate_random(self):
+        """
+        Generate random sequence of words by traversing from start terminator in
+        forward direction.
+        Returns list of words, each word is string.
+        """
         root_key_start = self._root_key(None, 'f')
 
         middle_variants = self.db[root_key_start]
@@ -120,16 +138,28 @@ class Brain:
         self.model = model
 
     def learn(self, string):
+        """
+        Learn string. Will throw SequenceTooShortException if string contains
+        less number of words that current model order requires.
+        """
         assert(isinstance(string, unicode))
         words = self._tokenize(string)
         self.model.learn(words)
 
     def generate_random(self):
+        """
+        Generate random reply as string. Capitalizes first letters when detects
+        start of sentence.
+        """
         rwords = self.model.generate_random()
         return self._words_to_string_with_caps(rwords)
 
     @staticmethod
     def _words_to_string_with_caps(words):
+        """
+        Joins list of words to single string, capitalizing first letters of
+        words at starts of sentences.
+        """
         string = ''
         sentence_start = True
         for word in words:
@@ -145,6 +175,9 @@ class Brain:
 
     @staticmethod
     def _tokenize(string):
+        """
+        Splits string into list of words.
+        """
         return [ re.sub("\s+", " ", word).lower() for word in
                  re.findall(r'\w+|\W+', string.strip(), re.UNICODE) ]
 
