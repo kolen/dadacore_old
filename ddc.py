@@ -40,16 +40,16 @@ class MModel:
 
         window = (None,) + tuple(words[:ord])
         for word in words[ord:]:
-            self._learn_triplet(window)
+            self._learn_window(window)
             window = window[1:ord+1] + (word,)
-        self._learn_triplet(window)
-        self._learn_triplet(window[1:ord+1] + (None,))
+        self._learn_window(window)
+        self._learn_window(window[1:ord+1] + (None,))
 
-    def _learn_triplet(self, words):
+    def _learn_window(self, words):
         for direction in ('f', 'b'):
-            self._learn_triplet_dir(words, direction)
+            self._learn_window_dir(words, direction)
 
-    def _learn_triplet_dir(self, words, direction):
+    def _learn_window_dir(self, words, direction):
         ord = self.order
         assert(len(words) == ord+1)
 
