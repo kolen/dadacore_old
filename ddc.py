@@ -14,7 +14,7 @@ class MModel:
 
     def __init__(self, filename=None, order=None):
         if not filename: filename = self.DEFAULT_FILENAME
-        self.db = shelve.open(filename, writeback=True)
+        self.db = shelve.open(filename)
         if self.db.has_key('.config'):
             self.order = self.db['.config']['order']
         else:
@@ -76,6 +76,8 @@ class MModel:
                 assert(toplevel[key] is None)
 
                 toplevel[key] = rightmost
+
+        self.db[root_key] = toplevel
 
     def generate_random(self):
         root_key_start = self._root_key(None, 'f')
