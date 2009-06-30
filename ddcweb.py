@@ -25,6 +25,7 @@ class index:
 
         for line in input.learntext.split("\n"):
             brainlog.write("%s\n" % line.strip().encode('utf-8'))
+            brainlog.flush()
             try:
                 brain.learn(line)
             except ddc.SequenceTooShortException:
