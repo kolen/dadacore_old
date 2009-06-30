@@ -16,7 +16,7 @@ with brain_lock:
     brain = ddc.Brain(mmodel)
     brain.learn(u"Test test test.")
 
-brainlog = open("brain.log", "w")
+brainlog = open("brain.log", "a")
 
 class index:
     def GET(self):
@@ -29,6 +29,7 @@ class index:
 
         for line in input.learntext.split("\n"):
             brainlog.write("%s\n" % line.strip().encode('utf-8'))
+            brainlog.flush()
             try:
                 with brain_lock:
                     brain.learn(line)
