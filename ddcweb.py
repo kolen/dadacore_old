@@ -13,7 +13,7 @@ mmodel = ddc.MModel()
 brain = ddc.Brain(mmodel)
 brain.learn(u"Test test test.")
 
-brainlog = open("brain.log", "w")
+brainlog = open("brain.log", "a")
 
 class index:
     def GET(self):
