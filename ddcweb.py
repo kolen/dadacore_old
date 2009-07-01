@@ -5,7 +5,8 @@ import ddc
 from threading import Lock
 
 urls = (
-  '/', 'index'
+  '/', 'index',
+  '/api/random', 'api_random',
 )
 
 render = web.template.render('templates/')
@@ -37,6 +38,13 @@ class index:
                 pass
 
         return render.index([])
+
+class api_random:
+    def GET(self):
+        with brain_lock:
+            line = brain.generate_random()
+        web.header("Content-type", "text/plain")
+        return line
 
 app = web.application(urls, globals())
 
