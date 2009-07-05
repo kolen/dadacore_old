@@ -28,6 +28,14 @@ class AbstractModel:
         self.sync()
 
 def createModel(type, *pargs, **kwargs):
+    """
+    Instantiate model of given type. Returns created model.
+    
+    Available types:
+     * berkeley_db
+     * zodb
+    
+    """
     if type not in models:
         raise ModelCreationException("No such model type: %s" % type)
     else:
