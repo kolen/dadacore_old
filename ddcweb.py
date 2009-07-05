@@ -37,6 +37,9 @@ class index:
             except ddc.SequenceTooShortException:
                 pass
 
+        with brain_lock:
+            brain.sync()
+
         return render.index([])
 
 class api_random:
