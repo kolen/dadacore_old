@@ -1,4 +1,10 @@
 #! /usr/bin/env python
+
+"""
+Berkeley db engine -- stores markov model in berkeley db as pickled values
+(using standard shelve module).
+"""
+
 import shelve
 import re
 import sys
@@ -80,6 +86,13 @@ class ShelveProxy:
         self.sync()
 
 class BerkeleyDBModel(dadacore.model.AbstractModel):
+    """
+    Model that stores chain information in berkeley db.
+    Uses caching, so call sync() to write dirty cached data from memory to
+    database file.
+    Non thread-safe, use locking.
+    """
+
     DEFAULT_FILENAME = "markovdb"
     DEFAULT_ORDER = 4
 

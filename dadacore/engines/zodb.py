@@ -11,6 +11,10 @@ import transaction
 import dadacore.model
 
 class ZodbModel(dadacore.model.AbstractModel):
+    """
+    Model that stores data in ZODB. VERY experimental. Database files created
+    with this model sometimes too big.
+    """
     DEFAULT_FILENAME = "markovdb.fs"
     DEFAULT_ORDER = 4
 
