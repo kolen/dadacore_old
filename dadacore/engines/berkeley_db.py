@@ -208,6 +208,8 @@ class BerkeleyDBModel(dadacore.model.AbstractModel):
 
             if isinstance(rightmost_variants, list):
                 rightmost = random.choice(rightmost_variants)
+                if rightmost is None:
+                    break
             elif isinstance(rightmost_variants, unicode):
                 rightmost = rightmost_variants
             else:
