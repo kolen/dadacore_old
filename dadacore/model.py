@@ -19,6 +19,14 @@ class AbstractModel:
         Returns list of words, each word is string.
         """
 
+    def sync(self):
+        """
+        Write cached data in memory to permanent storage
+        """
+
+    def __del__(self):
+        self.sync()
+
 def createModel(type, *pargs, **kwargs):
     if type not in models:
         raise ModelCreationException("No such model type: %s" % type)
