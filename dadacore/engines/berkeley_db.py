@@ -18,14 +18,20 @@ class ShelveProxyCachedValue:
         self.lastaccess = time()
         self.value = value
         self.dirty = dirty
+        self.hits = 0
+
+    def _touch(self):
+        """Update last access time and hits"""
+        self.lastaccess = time()
+        self.hits += 1
 
     def set(self, value):
-        self.lastaccess = time()
         self.value = value
         self.dirty = True
+        self._touch()
 
     def get(self):
-        self.lastaccess = time()
+        self._touch()
         return self.value
 
 class ShelveProxy:
@@ -35,6 +41,7 @@ class ShelveProxy:
 
     _CACHE_KEYS = 50
     _CACHE_KEYS_CLEAN_THRESHOLD = 60
+    _CACHE_ADD_SECONDS_FOR_EACH_HIT = 30
 
     def __init__(self, *pargs, **kwargs):
         """
@@ -49,7 +56,10 @@ class ShelveProxy:
 
     def _cleanup(self):
         items = self._cache.items()
-        items.sort(key=lambda x: x[1].lastaccess, reverse=True)
+        items.sort(key=lambda x:
+                       x[1].lastaccess +
+                       x[1].hits * self._CACHE_ADD_SECONDS_FOR_EACH_HIT,
+                   reverse=True)
         self._writeDirty(items[self._CACHE_KEYS:], delete=True)
 
     def _writeDirty(self, items, delete=False):
@@ -208,6 +218,8 @@ class BerkeleyDBModel(dadacore.model.AbstractModel):
 
             if isinstance(rightmost_variants, list):
                 rightmost = random.choice(rightmost_variants)
+                if rightmost is None:
+                    break
             elif isinstance(rightmost_variants, unicode):
                 rightmost = rightmost_variants
             else:
