@@ -3,6 +3,7 @@ from __future__ import with_statement
 import web
 import ddc
 from threading import Lock
+from dadacore.model import createModel
 
 urls = (
   '/', 'index',
@@ -13,7 +14,7 @@ render = web.template.render('templates/')
 
 brain_lock = Lock()
 with brain_lock:
-    mmodel = ddc.MModel()
+    mmodel = createModel('berkeley_db')
     brain = ddc.Brain(mmodel)
     brain.learn(u"Test test test.")
 
