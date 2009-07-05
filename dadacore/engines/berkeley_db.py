@@ -129,9 +129,9 @@ class BerkeleyDBModel(dadacore.model.AbstractModel):
         window = (None,) + tuple(words[:ord])
         for word in words[ord:]:
             self._learn_window(window)
-            window = window[1:ord+1] + (word,)
+            window = window[1:] + (word,)
         self._learn_window(window)
-        self._learn_window(window[1:ord+1] + (None,))
+        self._learn_window(window[1:] + (None,))
 
     def _learn_window(self, words):
         """
