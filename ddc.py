@@ -2,11 +2,10 @@
 
 import re
 from dadacore.brain import Brain
-from dadacore.engines.berkeley_db import BerkeleyDBModel
-from dadacore.model import SequenceTooShortException
+from dadacore.model import createModel, SequenceTooShortException
 
 def main():
-    testm = BerkeleyDBModel()
+    testm = createModel('berkeley_db')
     br = Brain(testm)
     for line in open('learn.txt'):
         try:
