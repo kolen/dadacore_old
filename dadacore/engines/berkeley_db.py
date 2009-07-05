@@ -149,6 +149,7 @@ class BerkeleyDBModel(dadacore.model.AbstractModel):
         """
         ord = self.order
         assert(len(words) == ord+1)
+        assert(not (words[-1] is None and words[-2] is None))
 
         if direction == 'b':
             words = tuple(reversed(words))
