@@ -86,7 +86,7 @@ class ZodbModel(dadacore.model.AbstractModel):
             words = tuple(reversed(words))
 
         if words[0] not in root[direction]:
-            root[direction][words[0]] = PersistentMapping()
+            root[direction][words[0]] = {}
         toplevel = root[direction][words[0]]
 
         key = words[1:-1]
@@ -105,7 +105,7 @@ class ZodbModel(dadacore.model.AbstractModel):
 
                 toplevel[key] = rightmost
 
-        toplevel._p_changed = True
+        root[direction][words[0]] = toplevel
 
     def generate_random(self):
         """
