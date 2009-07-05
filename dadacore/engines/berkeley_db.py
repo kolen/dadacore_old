@@ -190,6 +190,8 @@ class BerkeleyDBModel(dadacore.model.AbstractModel):
         assert(isinstance(middle, tuple))
         if isinstance(middle_variants[middle], list):
             rightmost = random.choice(middle_variants[middle])
+            if rightmost is None:
+                return list(middle)
         else:
             assert(isinstance(middle_variants[middle], unicode))
             rightmost = middle_variants[middle]
