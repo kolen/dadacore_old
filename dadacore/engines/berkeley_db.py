@@ -6,11 +6,8 @@ Berkeley db engine -- stores markov model in berkeley db as pickled values
 """
 
 import shelve
-import re
-import sys
 import random
 from time import time
-from pprint import pprint
 import dadacore.model
 
 class ShelveProxyCachedValue:
