@@ -217,15 +217,25 @@ class BerkeleyDBModel(dadacore.model.AbstractModel):
         return result
 
     def _seed_window(self, start_word):
-        root_key_start = self._root_key(start_word, 'f')
+        try:
+            return self._seed_window_dir(start_word, 'f')
+        except dadacore.model.StartWordException:
+            return self._seed_window_dir(start_word, 'b')
 
-        middle_variants = self.db[root_key_start]
+    def _seed_window_dir(self, start_word, direction):
+        root_key_start = self._root_key(start_word, direction)
+
+        try:
+            middle_variants = self.db[root_key_start]
+        except KeyError:
+            raise dadacore.model.NoSuchWordException(start_word)
+
         middle = random.choice(middle_variants.keys())
         assert(isinstance(middle, tuple))
         if isinstance(middle_variants[middle], list):
             rightmost = random.choice(middle_variants[middle])
             if rightmost is None:
-                return list(middle)
+                raise dadacore.model.StartWordSequenceTooShortException(start_word)
         else:
             assert(isinstance(middle_variants[middle], unicode))
             rightmost = middle_variants[middle]

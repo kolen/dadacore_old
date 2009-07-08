@@ -5,6 +5,15 @@ class SequenceTooShortException(Exception):
 class ModelCreationException(Exception):
     pass
 
+class StartWordException(Exception):
+    pass
+
+class NoSuchWordException(StartWordException):
+    pass
+
+class StartWordSequenceTooShortException(StartWordException):
+    pass
+
 class AbstractModel:
     def learn(self, words):
         """
