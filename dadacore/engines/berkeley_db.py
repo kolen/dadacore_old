@@ -190,26 +190,12 @@ class BerkeleyDBModel(dadacore.model.AbstractModel):
         forward direction.
         Returns list of words, each word is string.
         """
-        root_key_start = self._root_key(None, 'f')
+        window = self._seed_window(None)
+        result = list(window)
 
-        middle_variants = self.db[root_key_start]
-        middle = random.choice(middle_variants.keys())
-        assert(isinstance(middle, tuple))
-        if isinstance(middle_variants[middle], list):
-            rightmost = random.choice(middle_variants[middle])
-            if rightmost is None:
-                return list(middle)
-        else:
-            assert(isinstance(middle_variants[middle], unicode))
-            rightmost = middle_variants[middle]
-
-        window = (None,) + middle + (rightmost,)
-        result = list(middle) + [rightmost,]
-
-        assert(len(window) == self.order + 1)
+        assert(len(window) == self.order)
 
         while 1:
-            window = window[1:]
             middle_variants = self.db[self._root_key(window[0], 'f')]
             rightmost_variants = middle_variants[window[1:]]
 
@@ -226,8 +212,25 @@ class BerkeleyDBModel(dadacore.model.AbstractModel):
             window = window + (rightmost,)
 
             result.append(rightmost)
+            window = window[1:]
 
         return result
+
+    def _seed_window(self, start_word):
+        root_key_start = self._root_key(start_word, 'f')
+
+        middle_variants = self.db[root_key_start]
+        middle = random.choice(middle_variants.keys())
+        assert(isinstance(middle, tuple))
+        if isinstance(middle_variants[middle], list):
+            rightmost = random.choice(middle_variants[middle])
+            if rightmost is None:
+                return list(middle)
+        else:
+            assert(isinstance(middle_variants[middle], unicode))
+            rightmost = middle_variants[middle]
+
+        return middle + (rightmost,)
 
     def sync(self):
         self.db.sync()
