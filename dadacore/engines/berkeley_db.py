@@ -191,12 +191,23 @@ class BerkeleyDBModel(dadacore.model.AbstractModel):
         Returns list of words, each word is string.
         """
         window = self._seed_window(None)
-        result = list(window)
 
+        expanded_f = self._expand_window(window, 'f')
+        expanded_b = self._expand_window(window, 'b')
+
+        return list(reversed(expanded_b)) + list(window) + expanded_b
+
+    def _expand_window(self, window, direction):
+        assert(isinstance(window, tuple))
         assert(len(window) == self.order)
 
+        result = []
+
+        if direction == 'b':
+            window = tuple(reversed(window))
+
         while 1:
-            middle_variants = self.db[self._root_key(window[0], 'f')]
+            middle_variants = self.db[self._root_key(window[0], direction)]
             rightmost_variants = middle_variants[window[1:]]
 
             if isinstance(rightmost_variants, list):
@@ -220,7 +231,7 @@ class BerkeleyDBModel(dadacore.model.AbstractModel):
         try:
             return self._seed_window_dir(start_word, 'f')
         except dadacore.model.StartWordException:
-            return tuple(list(self._seed_window_dir(start_word, 'b')).reverse())
+            return self._seed_window_dir(start_word, 'b')
 
     def _seed_window_dir(self, start_word, direction):
         root_key_start = self._root_key(start_word, direction)
