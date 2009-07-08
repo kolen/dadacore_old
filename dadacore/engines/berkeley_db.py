@@ -220,7 +220,7 @@ class BerkeleyDBModel(dadacore.model.AbstractModel):
         try:
             return self._seed_window_dir(start_word, 'f')
         except dadacore.model.StartWordException:
-            return self._seed_window_dir(start_word, 'b')
+            return tuple(list(self._seed_window_dir(start_word, 'b')).reverse())
 
     def _seed_window_dir(self, start_word, direction):
         root_key_start = self._root_key(start_word, direction)
