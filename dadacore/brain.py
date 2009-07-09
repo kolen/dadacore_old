@@ -21,6 +21,11 @@ class Brain:
         rwords = self.model.generate_random()
         return self._words_to_string_with_caps(rwords)
 
+    def generate_from_word(self, word):
+        word = word.strip().lower()
+        rwords = self.model.generate_from_word(word)
+        return self._words_to_string_with_caps(rwords)
+
     def sync(self):
         """
         Calls sync() on this brain's model
