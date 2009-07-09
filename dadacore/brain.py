@@ -10,7 +10,7 @@ class Brain:
         less number of words that current model order requires.
         """
         assert(isinstance(string, unicode))
-        words = self._tokenize(string)
+        words = self._string_to_words(string)
         self.model.learn(words)
 
     def generate_random(self):
@@ -52,7 +52,7 @@ class Brain:
         return string
 
     @staticmethod
-    def _tokenize(string):
+    def _string_to_words(string):
         """
         Splits string into list of words.
         """
