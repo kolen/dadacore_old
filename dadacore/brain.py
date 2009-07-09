@@ -1,6 +1,12 @@
 import re
+from random import randint
+from dadacore.model import StartWordException
 
 class Brain:
+
+    GENERATE_FROM_PHRASE_PICK_COUNT = 5
+    GENERATE_FROM_PHRASE_RETRIES_COUNT = 3
+
     def __init__(self, model):
         self.model = model
 
@@ -25,6 +31,26 @@ class Brain:
         word = word.strip().lower()
         rwords = self.model.generate_from_word(word)
         return self._words_to_string_with_caps(rwords)
+
+    def generate_from_phrase(self, phrase):
+        words = self._string_to_words(phrase)
+        words.sort(key=lambda x: len(x), reverse=True)
+        words = words[:self.GENERATE_FROM_PHRASE_PICK_COUNT]
+
+        tries = 0
+        while tries < self.GENERATE_FROM_PHRASE_RETRIES_COUNT and words:
+            tries += 1
+            i = randint(0, len(words))
+            selected_word = words[i]
+            del words[i]
+
+            try:
+                return self.generate_from_word(selected_word)
+            except StartWordException:
+                continue
+
+        # If all tries generating from word fails, generate random
+        return self.generate_random()
 
     def sync(self):
         """
