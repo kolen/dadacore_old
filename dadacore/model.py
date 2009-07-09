@@ -28,6 +28,11 @@ class AbstractModel:
         Returns list of words, each word is string.
         """
 
+    def generate_from_word(self, word):
+        """
+        Generate sequence containing specified word.
+        """
+
     def sync(self):
         """
         Write cached data in memory to permanent storage
