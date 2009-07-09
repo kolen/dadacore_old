@@ -8,7 +8,7 @@ Berkeley db engine -- stores markov model in berkeley db as pickled values
 import shelve
 import random
 from time import time
-import dadacore.model
+from dadacore import model
 
 class ShelveProxyCachedValue:
     def __init__(self, value, dirty=False):
@@ -92,7 +92,7 @@ class ShelveProxy:
     def __del__(self):
         self.sync()
 
-class BerkeleyDBModel(dadacore.model.AbstractModel):
+class BerkeleyDBModel(model.AbstractModel):
     """
     Model that stores chain information in berkeley db.
     Uses caching, so call sync() to write dirty cached data from memory to
@@ -131,7 +131,7 @@ class BerkeleyDBModel(dadacore.model.AbstractModel):
         """
         ord = self.order
         if len(words) < self.order+1:
-            raise dadacore.model.SequenceTooShortException(words)
+            raise model.SequenceTooShortException(words)
 
         window = (None,) + tuple(words[:ord])
         for word in words[ord:]:
@@ -266,7 +266,7 @@ class BerkeleyDBModel(dadacore.model.AbstractModel):
     def _seed_window(self, start_word):
         try:
             return self._seed_window_dir(start_word, 'f')
-        except dadacore.model.StartWordException:
+        except model.StartWordException:
             return self._seed_window_dir(start_word, 'b')
 
     def _seed_window_dir(self, start_word, direction):
@@ -275,14 +275,14 @@ class BerkeleyDBModel(dadacore.model.AbstractModel):
         try:
             middle_variants = self.db[root_key_start]
         except KeyError:
-            raise dadacore.model.NoSuchWordException(start_word)
+            raise model.NoSuchWordException(start_word)
 
         middle = random.choice(middle_variants.keys())
         assert(isinstance(middle, tuple))
         if isinstance(middle_variants[middle], list):
             rightmost = random.choice(middle_variants[middle])
             if rightmost is None:
-                raise dadacore.model.StartWordSequenceTooShortException(start_word)
+                raise model.StartWordSequenceTooShortException(start_word)
         else:
             assert(isinstance(middle_variants[middle], unicode))
             rightmost = middle_variants[middle]
