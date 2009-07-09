@@ -1,12 +1,14 @@
 #! /usr/bin/env python
 from __future__ import with_statement
 import web
-import ddc
 from threading import Lock
-from dadacore.model import createModel
+from dadacore.model import createModel, SequenceTooShortException, \
+    StartWordException
+from dadacore.brain import Brain
 
 urls = (
   '/', 'index',
+  '/reply_to_word', 'reply_to_word',
   '/api/random', 'api_random',
 )
 
@@ -15,7 +17,8 @@ render = web.template.render('templates/')
 brain_lock = Lock()
 with brain_lock:
     mmodel = createModel('berkeley_db')
-    brain = ddc.Brain(mmodel)
+
+    brain = Brain(mmodel)
     brain.learn(u"Test test test.")
 
 brainlog = open("brain.log", "a")
@@ -35,13 +38,26 @@ class index:
             try:
                 with brain_lock:
                     brain.learn(line)
-            except ddc.SequenceTooShortException:
+            except SequenceTooShortException:
                 pass
 
         with brain_lock:
             brain.sync()
 
         return render.index([])
+
+class reply_to_word:
+    def GET(self):
+        input = web.input()
+
+        reply = ''
+        try:
+            with brain_lock:
+                reply = brain.generate_from_word(input.word)
+        except StartWordException:
+            reply = "No reply found for this word"
+
+        return render.index([reply])
 
 class api_random:
     def GET(self):
