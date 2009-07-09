@@ -158,16 +158,20 @@ class BerkeleyDBModel(dadacore.model.AbstractModel):
         assert(len(words) == ord+1)
         assert(not (words[-1] is None and words[-2] is None))
 
-        if direction == 'b':
-            words = tuple(reversed(words))
+        if direction == 'f':
+            root_key = self._root_key(words[0], direction)
+        else:
+            root_key = self._root_key(words[-1], direction)
 
-        root_key = self._root_key(words[0], direction)
         if not self.db.has_key(root_key):
             self.db[root_key] = {}
         toplevel = self.db[root_key]
 
         key = words[1:-1]
-        rightmost = words[-1]
+        if direction == 'f':
+            rightmost = words[-1]
+        else:
+            rightmost = words[0]
         if not toplevel.has_key(key):
             toplevel[key] = rightmost
         else:
@@ -191,23 +195,25 @@ class BerkeleyDBModel(dadacore.model.AbstractModel):
         Returns list of words, each word is string.
         """
         window = self._seed_window(None)
+        expanded_f = self._expand_window_f(window)
+        return list(window) + expanded_f
 
-        expanded_f = self._expand_window(window, 'f')
-        expanded_b = self._expand_window(window, 'b')
+    def generate_from_word(self, word):
+        window = self._seed_window(word)
 
-        return list(reversed(expanded_b)) + list(window) + expanded_b
+        expanded_f = self._expand_window_f(window)
+        expanded_b = self._expand_window_b(window)
 
-    def _expand_window(self, window, direction):
+        return expanded_b + list(window) + expanded_f
+
+    def _expand_window_f(self, window):
         assert(isinstance(window, tuple))
         assert(len(window) == self.order)
 
         result = []
 
-        if direction == 'b':
-            window = tuple(reversed(window))
-
         while 1:
-            middle_variants = self.db[self._root_key(window[0], direction)]
+            middle_variants = self.db[self._root_key(window[0], 'f')]
             rightmost_variants = middle_variants[window[1:]]
 
             if isinstance(rightmost_variants, list):
@@ -224,6 +230,33 @@ class BerkeleyDBModel(dadacore.model.AbstractModel):
 
             result.append(rightmost)
             window = window[1:]
+
+        return result
+
+    def _expand_window_b(self, window):
+        assert(isinstance(window, tuple))
+        assert(len(window) == self.order)
+
+        result = []
+
+        while 1:
+            middle_variants = self.db[self._root_key(window[-1], 'b')]
+            rightmost_variants = middle_variants[window[:-1]]
+
+            if isinstance(rightmost_variants, list):
+                rightmost = random.choice(rightmost_variants)
+                if rightmost is None:
+                    break
+            elif isinstance(rightmost_variants, unicode):
+                rightmost = rightmost_variants
+            else:
+                assert(rightmost_variants is None)
+                break
+
+            window = (rightmost,) + window
+
+            result.insert(0, rightmost)
+            window = window[:-1]
 
         return result
 
