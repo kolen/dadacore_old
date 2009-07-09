@@ -199,6 +199,9 @@ class BerkeleyDBModel(dadacore.model.AbstractModel):
         return list(window) + expanded_f
 
     def generate_from_word(self, word):
+        """
+        Generate sequence containing specified word.
+        """
         window = self._seed_window(word)
 
         expanded_f = self._expand_window_f(window)
