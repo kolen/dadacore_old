@@ -1,6 +1,11 @@
 import re
 from random import randint
-from dadacore.model import StartWordException
+from dadacore.model import StartWordException, NoSuchWordException
+
+class BrainIsEmptyException:
+    """
+    Thrown if brain has not learned anything.
+    """
 
 class Brain:
 
@@ -24,7 +29,10 @@ class Brain:
         Generate random reply as string. Capitalizes first letters when detects
         start of sentence.
         """
-        rwords = self.model.generate_random()
+        try:
+            rwords = self.model.generate_random()
+        except NoSuchWordException:
+            raise BrainIsEmptyException()
         return self._words_to_string_with_caps(rwords)
 
     def generate_from_word(self, word):
