@@ -9,7 +9,7 @@ from dadacore.brain import Brain, BrainIsEmptyException
 
 urls = (
   '/', 'index',
-  '/reply_to_word', 'reply_to_word',
+  '/reply_to_line', 'reply_to_line',
   '/api/random', 'api_random',
 )
 
@@ -51,14 +51,14 @@ class index:
 
         return render.index([])
 
-class reply_to_word:
+class reply_to_line:
     def GET(self):
         input = web.input()
 
         reply = ''
         try:
             with brain_lock:
-                reply = brain.generate_from_word(input.word)
+                reply = brain.generate_from_phrase(input.word)
         except StartWordException:
             reply = "No reply found for this word"
 
