@@ -11,6 +11,7 @@ urls = (
   '/', 'index',
   '/reply_to_line', 'reply_to_line',
   '/api/random', 'api_random',
+  '/api/reply_to_line', 'api_reply_to_line',
 )
 
 render = web.template.render('templates/')
@@ -68,6 +69,14 @@ class api_random:
     def GET(self):
         with brain_lock:
             line = brain.generate_random()
+        web.header("Content-type", "text/plain")
+        return line
+
+class api_reply_to_line:
+    def GET(self):
+        line = web.input().line
+        with brain_lock:
+            line = brain.generate_from_phrase(line)
         web.header("Content-type", "text/plain")
         return line
 
