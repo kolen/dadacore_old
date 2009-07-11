@@ -6,12 +6,9 @@ Berkeley db engine -- stores markov model in berkeley db as pickled values
 """
 
 import shelve
-import re
-import sys
 import random
 from time import time
-from pprint import pprint
-import dadacore.model
+from dadacore import model
 
 class ShelveProxyCachedValue:
     def __init__(self, value, dirty=False):
@@ -95,7 +92,7 @@ class ShelveProxy:
     def __del__(self):
         self.sync()
 
-class BerkeleyDBModel(dadacore.model.AbstractModel):
+class BerkeleyDBModel(model.AbstractModel):
     """
     Model that stores chain information in berkeley db.
     Uses caching, so call sync() to write dirty cached data from memory to
@@ -134,7 +131,7 @@ class BerkeleyDBModel(dadacore.model.AbstractModel):
         """
         ord = self.order
         if len(words) < self.order+1:
-            raise dadacore.model.SequenceTooShortException(words)
+            raise model.SequenceTooShortException(words)
 
         window = (None,) + tuple(words[:ord])
         for word in words[ord:]:
@@ -161,16 +158,20 @@ class BerkeleyDBModel(dadacore.model.AbstractModel):
         assert(len(words) == ord+1)
         assert(not (words[-1] is None and words[-2] is None))
 
-        if direction == 'b':
-            words = tuple(reversed(words))
+        if direction == 'f':
+            root_key = self._root_key(words[0], direction)
+        else:
+            root_key = self._root_key(words[-1], direction)
 
-        root_key = self._root_key(words[0], direction)
         if not self.db.has_key(root_key):
             self.db[root_key] = {}
         toplevel = self.db[root_key]
 
         key = words[1:-1]
-        rightmost = words[-1]
+        if direction == 'f':
+            rightmost = words[-1]
+        else:
+            rightmost = words[0]
         if not toplevel.has_key(key):
             toplevel[key] = rightmost
         else:
@@ -193,26 +194,28 @@ class BerkeleyDBModel(dadacore.model.AbstractModel):
         forward direction.
         Returns list of words, each word is string.
         """
-        root_key_start = self._root_key(None, 'f')
+        window = self._seed_window(None)
+        expanded_f = self._expand_window_f(window)
+        return list(window) + expanded_f
 
-        middle_variants = self.db[root_key_start]
-        middle = random.choice(middle_variants.keys())
-        assert(isinstance(middle, tuple))
-        if isinstance(middle_variants[middle], list):
-            rightmost = random.choice(middle_variants[middle])
-            if rightmost is None:
-                return list(middle)
-        else:
-            assert(isinstance(middle_variants[middle], unicode))
-            rightmost = middle_variants[middle]
+    def generate_from_word(self, word):
+        """
+        Generate sequence containing specified word.
+        """
+        window = self._seed_window(word)
 
-        window = (None,) + middle + (rightmost,)
-        result = list(middle) + [rightmost,]
+        expanded_f = self._expand_window_f(window)
+        expanded_b = self._expand_window_b(window)
 
-        assert(len(window) == self.order + 1)
+        return expanded_b + list(window) + expanded_f
+
+    def _expand_window_f(self, window):
+        assert(isinstance(window, tuple))
+        assert(len(window) == self.order)
+
+        result = []
 
         while 1:
-            window = window[1:]
             middle_variants = self.db[self._root_key(window[0], 'f')]
             rightmost_variants = middle_variants[window[1:]]
 
@@ -229,8 +232,70 @@ class BerkeleyDBModel(dadacore.model.AbstractModel):
             window = window + (rightmost,)
 
             result.append(rightmost)
+            window = window[1:]
 
         return result
+
+    def _expand_window_b(self, window):
+        assert(isinstance(window, tuple))
+        assert(len(window) == self.order)
+
+        result = []
+
+        while 1:
+            middle_variants = self.db[self._root_key(window[-1], 'b')]
+            rightmost_variants = middle_variants[window[:-1]]
+
+            if isinstance(rightmost_variants, list):
+                rightmost = random.choice(rightmost_variants)
+                if rightmost is None:
+                    break
+            elif isinstance(rightmost_variants, unicode):
+                rightmost = rightmost_variants
+            else:
+                assert(rightmost_variants is None)
+                break
+
+            window = (rightmost,) + window
+
+            result.insert(0, rightmost)
+            window = window[:-1]
+
+        return result
+
+    def _seed_window(self, start_word):
+        try:
+            return self._seed_window_dir(start_word, 'f')
+        except model.StartWordException:
+            return self._seed_window_dir(start_word, 'b')
+
+    def _seed_window_dir(self, start_word, direction):
+        root_key_start = self._root_key(start_word, direction)
+
+        try:
+            middle_variants = self.db[root_key_start]
+        except KeyError:
+            raise model.NoSuchWordException(start_word)
+
+        middle = random.choice(middle_variants.keys())
+        assert(isinstance(middle, tuple))
+
+        if start_word is None:
+            rightmost = middle_variants[middle]
+
+            assert(isinstance(rightmost, list) or
+                   isinstance(rightmost, unicode))
+            if isinstance(rightmost, list):
+                rightmost = random.choice(rightmost)
+
+            assert(isinstance(rightmost, unicode))
+            return middle + (rightmost,)
+
+        if direction == 'f':
+            return (start_word,) + middle
+        else:
+            assert(direction == 'b')
+            return middle + (start_word,)
 
     def sync(self):
         self.db.sync()

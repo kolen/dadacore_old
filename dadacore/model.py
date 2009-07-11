@@ -5,6 +5,15 @@ class SequenceTooShortException(Exception):
 class ModelCreationException(Exception):
     pass
 
+class StartWordException(Exception):
+    pass
+
+class NoSuchWordException(StartWordException):
+    pass
+
+class StartWordSequenceTooShortException(StartWordException):
+    pass
+
 class AbstractModel:
     def learn(self, words):
         """
@@ -19,6 +28,11 @@ class AbstractModel:
         Returns list of words, each word is string.
         """
 
+    def generate_from_word(self, word):
+        """
+        Generate sequence containing specified word.
+        """
+
     def sync(self):
         """
         Write cached data in memory to permanent storage
@@ -30,11 +44,11 @@ class AbstractModel:
 def createModel(type, *pargs, **kwargs):
     """
     Instantiate model of given type. Returns created model.
-    
+
     Available types:
      * berkeley_db
      * zodb
-    
+
     """
     if type not in models:
         raise ModelCreationException("No such model type: %s" % type)
