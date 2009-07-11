@@ -58,7 +58,7 @@ class Brain:
         tries = 0
         while tries < self.GENERATE_FROM_PHRASE_RETRIES_COUNT and words:
             tries += 1
-            i = randint(0, len(words))
+            i = randint(0, len(words)-1)
             selected_word = words[i]
             del words[i]
 
