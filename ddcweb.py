@@ -1,10 +1,11 @@
 #! /usr/bin/env python
 from __future__ import with_statement
 import web
+from sys import exc_info
 from threading import Lock
 from dadacore.model import createModel, SequenceTooShortException, \
     StartWordException
-from dadacore.brain import Brain
+from dadacore.brain import Brain, BrainIsEmptyException
 
 urls = (
   '/', 'index',
@@ -19,14 +20,18 @@ with brain_lock:
     mmodel = createModel('berkeley_db')
 
     brain = Brain(mmodel)
-    brain.learn(u"Test test test.")
 
 brainlog = open("brain.log", "a")
 
 class index:
     def GET(self):
-        with brain_lock:
-            randomlines = [ brain.generate_random() for i in range(1,10) ]
+        try:
+            with brain_lock:
+                randomlines = [ brain.generate_random() for i in range(1,10) ]
+        except BrainIsEmptyException:
+            randomlines = [ "Brain is empty" ]
+        except StartWordException:
+            randomlines = [ "Error: %s %s" % exc_info()[0:1] ]
         return render.index(randomlines)
 
     def POST(self):
