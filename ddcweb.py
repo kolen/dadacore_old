@@ -1,8 +1,8 @@
 #! /usr/bin/env python
 from __future__ import with_statement
-import web
 from sys import exc_info
 from threading import Lock
+import web
 from dadacore.model import createModel, SequenceTooShortException, \
     StartWordException
 from dadacore.brain import Brain, BrainIsEmptyException
