@@ -279,15 +279,23 @@ class BerkeleyDBModel(model.AbstractModel):
 
         middle = random.choice(middle_variants.keys())
         assert(isinstance(middle, tuple))
-        rightmost = middle_variants[middle]
 
-        if isinstance(rightmost, list):
-            rightmost = random.choice(rightmost)
-        elif rightmost is None:
-            raise model.StartWordSequenceTooShortException(start_word)
+        if start_word is None:
+            rightmost = middle_variants[middle]
 
-        assert(isinstance(rightmost, unicode))
-        return middle + (rightmost,)
+            assert(isinstance(rightmost, list) or
+                   isinstance(rightmost, unicode))
+            if isinstance(rightmost, list):
+                rightmost = random.choice(rightmost)
+
+            assert(isinstance(rightmost, unicode))
+            return middle + (rightmost,)
+
+        if direction == 'f':
+            return (start_word,) + middle
+        else:
+            assert(direction == 'b')
+            return middle + (start_word,)
 
     def sync(self):
         self.db.sync()
