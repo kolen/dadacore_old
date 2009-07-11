@@ -47,7 +47,7 @@ class Brain:
 
         # Can occur if word is " "
         if word == '':
-            return self.generate_random()
+            raise NoSuchWordException(word)
 
         rwords = self.model.generate_from_word(word)
         return self._words_to_string_with_caps(rwords)
