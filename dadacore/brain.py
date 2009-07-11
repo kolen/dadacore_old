@@ -8,6 +8,10 @@ class BrainIsEmptyException:
     """
 
 class Brain:
+    """
+    High-level interface for interaction with Markov model. Can learn lines,
+    generate random replies or reply to input line.
+    """
 
     GENERATE_FROM_PHRASE_PICK_COUNT = 5
     GENERATE_FROM_PHRASE_RETRIES_COUNT = 3
@@ -36,11 +40,17 @@ class Brain:
         return self._words_to_string_with_caps(rwords)
 
     def generate_from_word(self, word):
+        """
+        Generate reply containing specified word.
+        """
         word = word.strip().lower()
         rwords = self.model.generate_from_word(word)
         return self._words_to_string_with_caps(rwords)
 
     def generate_from_phrase(self, phrase):
+        """
+        Generate reply to given phrase. Phrase is string with raw line of text.
+        """
         words = self._string_to_words(phrase)
         words.sort(key=lambda x: len(x), reverse=True)
         words = words[:self.GENERATE_FROM_PHRASE_PICK_COUNT]
