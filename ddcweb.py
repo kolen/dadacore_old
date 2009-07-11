@@ -69,7 +69,7 @@ class api_random:
     def GET(self):
         with brain_lock:
             line = brain.generate_random()
-        web.header("Content-type", "text/plain")
+        web.header("Content-type", "text/plain; charset=utf-8")
         return line
 
 class api_reply_to_line:
@@ -77,7 +77,7 @@ class api_reply_to_line:
         line = web.input().line
         with brain_lock:
             line = brain.generate_from_phrase(line)
-        web.header("Content-type", "text/plain")
+        web.header("Content-type", "text/plain; charset=utf-8")
         return line
 
 app = web.application(urls, globals())
