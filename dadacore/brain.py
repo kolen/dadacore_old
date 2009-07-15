@@ -94,9 +94,9 @@ class Brain:
                 string += word[0].upper() + word[1:]
             else:
                 string += word
-            sentence_start = re.match(r'[.?!]\s+', word)
+            sentence_start = re.search(r'[.?!]\s+', word)
 
-        if not re.match('[.?!]', word):
+        if not re.search('[.?!]', word):
             string += '.'
         return string
 
