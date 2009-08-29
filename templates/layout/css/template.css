@@ -1,0 +1,51 @@
+body {
+	color: black;		
+	}
+
+
+
+/*-----------------------*/	
+#all {
+	margin: 0 auto;
+}
+
+#page {
+	float: left;
+	width: 100%;
+
+	}
+
+
+
+#header {
+	float: left;
+	width: 100%;
+	text-align: center;
+	position: relative;
+}
+
+#header .menu {
+}
+
+#header .menu a {
+
+}
+
+
+/*-----------------------------*/
+
+#main {
+	float: left;
+	width: 100%;
+
+}
+
+
+/*----------------------------------------*/
+
+#footer {
+	float: left;
+	width: 100%;
+}
+
+/*---------*/
