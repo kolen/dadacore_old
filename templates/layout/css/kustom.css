@@ -1,0 +1,77 @@
+
+.section img {
+	padding: 0.4em;
+	border: 0.1em solid silver;
+	margin: 0 0.5em;
+}
+
+
+#main p {
+}
+
+a:link {
+	color: #AB6F48;
+}
+a:visited {
+
+}
+	
+a:hover, a:active {
+
+}
+
+/*---------------------*/
+.chat {
+	width: 500px;
+	margin: 20px auto;
+	}
+
+.chat .screen {
+	border: 1px solid gray;
+	width: 500px;
+	height: 400px;
+	overflow: scroll; 
+	margin: 10px 0;
+	
+}
+
+.chat .screen .item {
+	
+}
+
+.chat .screen .name {
+	font-weight: bold;
+	margin-right: 5px;	
+}
+
+.chat .screen .item .content {
+	
+}
+
+.chat .input {
+	
+}
+
+.chat .input textarea {
+	width: 400px;
+	height: 100px;
+}
+
+.chat .input button {
+	
+}
+
+
+/*---------------------*/
+/*---------------------*/
+/*---------------------*/
+/*---------------------*/
+/*---------------------*/
+/*---------------------*/
+/*---------------------*/
+/*---------------------*/
+/*---------------------*/
+/*---------------------*/
+/*---------------------*/
+
+

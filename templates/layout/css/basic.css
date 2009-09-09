@@ -1,0 +1,141 @@
+/* Don't forget to set a foreground and background color 
+   on the 'html' or 'body' element! */
+html, body, div, span,
+applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+dd, dl, dt, li, ol, ul,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-weight: inherit;
+	font-style: inherit;
+	line-height: 140%;
+	font-family: inherit;
+	text-align: inherit;
+/*	vertical-align:baseline;*/
+/*
+	Это портит align="left" для эксплопера	
+	*/
+}
+strong, th, thead {
+	font-weight: bold;
+	}
+
+em { 
+	font-style: italic;
+	}
+
+ 
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+
+/*---------------------------*/
+html, body {
+	height: 100%;
+	width: 100%;
+	font-family: verdana, arial, sans-serif;
+	line-height: 140%;
+}
+
+
+html{
+    font-size:100.01%;
+    }
+   
+body{
+    font-size:62.5%;
+    }
+
+
+
+h1, h2, h3 {
+	font-weight: bold;
+	}
+
+
+
+/*---------------------------------*/
+
+
+a.banner {
+	display: block;
+	text-align: center;
+	}
+
+form table {
+	margin: 0 auto;
+}
+form table td, form table th, .section td, .section th {
+	padding: 3px 5px;
+	text-align: left;
+	vertical-align: top;
+}
+
+form th {
+	text-align: right;
+}
+
+/*-----------------------------*/		
+
+
+
+
+.section ul, .section ol {
+	margin: 10px 10px 10px 20px;
+	list-style-position: outside;
+}
+
+.section p {
+	margin-top: 5px;
+	text-align: justify;
+}
+
+
+address {
+	font-style: normal;
+	}
+
+.paging {
+	clear: both;
+}
+
+button {
+	cursor: hand;
+	cursor: pointer;
+	}
+	
+	
+.menu a {
+	text-decoration: none;
+	text-align: center;
+	}	
+	
+	
+.lefted {text-align: left;}
+.centered {text-align: center;}
+.righted {text-align: right;}
+.justified {text-align: justify;}
+
+
+#header a, #footer a {
+	text-decoration: none;
+	}
+
+.table {
+	margin: 20px 0;
+	}
+	
+	
+.h {
+	font-weight: bold;
+	}
+
+
