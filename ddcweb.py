@@ -74,9 +74,13 @@ class api_random:
 
 class api_reply_to_line:
     def GET(self):
-        line = web.input().line
+        get_params = web.input()
+        line = get_params.line
         with brain_lock:
             line = brain.generate_from_phrase(line)
+            if get_params.learn:
+                brain.learn(line)
+
         web.header("Content-type", "text/plain; charset=utf-8")
         return line
 
