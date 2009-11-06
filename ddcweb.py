@@ -79,7 +79,10 @@ class api_reply_to_line:
         with brain_lock:
             line = brain.generate_from_phrase(srcline)
             if get_params.learn:
-                brain.learn(srcline)
+                try:
+                    brain.learn(srcline)
+                except SequenceTooShortException:
+                    pass
 
         web.header("Content-type", "text/plain; charset=utf-8")
         return line
