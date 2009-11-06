@@ -81,6 +81,10 @@ class api_reply_to_line:
             if get_params.learn:
                 try:
                     brain.learn(srcline)
+                    # todo: make brainlog class or move logging to brain
+                    brainlog.write("%s\n" % line.strip().encode('utf-8'))
+                    brainlog.flush()
+
                 except SequenceTooShortException:
                     pass
 
