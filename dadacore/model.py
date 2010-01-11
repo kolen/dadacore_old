@@ -63,7 +63,12 @@ def _createZodbModel(*pargs, **kwargs):
     from dadacore.engines.zodb import ZodbModel
     return ZodbModel(*pargs, **kwargs)
 
+def _createTcdbModel(*pargs, **kwargs):
+    from dadacore.engines.tcdb import TcdbModel
+    return TcdbModel(*pargs, **kwargs)
+
 models = {
     'shelve': _createShelveModel,
     'zodb': _createZodbModel,
+    'tcdb': _createTcdbModel,
 }
