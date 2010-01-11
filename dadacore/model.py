@@ -55,15 +55,15 @@ def createModel(type, *pargs, **kwargs):
     else:
         return models[type](*pargs, **kwargs)
 
-def _createBerkeleyDbModel(*pargs, **kwargs):
-    from dadacore.engines.berkeley_db import BerkeleyDBModel
-    return BerkeleyDBModel(*pargs, **kwargs)
+def _createShelveModel(*pargs, **kwargs):
+    from dadacore.engines.shelvedb import ShelveModel
+    return ShelveModel(*pargs, **kwargs)
 
 def _createZodbModel(*pargs, **kwargs):
     from dadacore.engines.zodb import ZodbModel
     return ZodbModel(*pargs, **kwargs)
 
 models = {
-    'berkeley_db': _createBerkeleyDbModel,
+    'shelve': _createShelveModel,
     'zodb': _createZodbModel,
 }

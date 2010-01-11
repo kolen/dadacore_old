@@ -18,7 +18,7 @@ render = web.template.render('templates/')
 
 brain_lock = Lock()
 with brain_lock:
-    mmodel = createModel('berkeley_db')
+    mmodel = createModel('shelve')
 
     brain = Brain(mmodel)
 
