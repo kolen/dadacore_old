@@ -5,7 +5,7 @@ from dadacore.model import createModel, SequenceTooShortException
 from sys import stderr
 
 def main():
-    testm = createModel('berkeley_db')
+    testm = createModel('shelve')
     br = Brain(testm)
     for line in open('brain.log'):
         stderr.write(".")
